@@ -1,0 +1,47 @@
+:root{--blue:#0b4f8a;--blue-d:#083a66;--line:#d5dbe3;--bg:#f2f4f7;--txt:#222;--mut:#667;--red:#c62828;--org:#e68a00;--yel:#c9a800}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--txt);background:var(--bg)}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.topbar{background:#e6eaf0;border-bottom:1px solid var(--line);font-size:13px;color:var(--mut)}
+.topbar .wrap{display:flex;justify-content:space-between;padding-top:4px;padding-bottom:4px}
+.masthead{background:#fff;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;padding:14px 0;color:var(--blue-d)}
+.brand:hover{text-decoration:none}
+.logo{width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;font-size:24px;display:grid;place-items:center}
+.brand strong{display:block;font-size:24px;letter-spacing:2px;line-height:1.2}
+.brand small{color:var(--mut);font-size:12px;letter-spacing:.5px}
+.mainnav{background:var(--blue)}
+.mainnav .wrap{display:flex;flex-wrap:wrap}
+.mainnav a{color:#fff;padding:11px 18px;display:block}
+.mainnav a:hover,.mainnav a.on{background:var(--blue-d);text-decoration:none}
+.alertbar{background:#fff3cd;border-bottom:1px solid #e8d48a;font-size:14px}
+.alertbar .wrap{padding-top:7px;padding-bottom:7px;display:flex;gap:16px;flex-wrap:wrap}
+.alertbar b{background:var(--red);color:#fff;padding:0 8px;border-radius:2px}
+main.wrap{padding-top:18px;padding-bottom:30px}
+h1.pt{font-size:22px;margin:0 0 12px;border-left:5px solid var(--blue);padding-left:10px}
+.panel{background:#fff;border:1px solid var(--line);margin-bottom:16px;padding:14px 16px}
+.panel h2{font-size:17px;margin:0 0 10px;color:var(--blue-d)}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}.ph h2{margin:0}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}.mainnav a{padding:10px 12px}}
+table.data{width:100%;border-collapse:collapse;font-size:14px}
+table.data th{background:#eaf0f7;text-align:left;padding:7px 9px;border:1px solid var(--line);white-space:nowrap}
+table.data td{padding:7px 9px;border:1px solid var(--line)}
+table.data tbody tr:nth-child(even){background:#fafbfc}
+.panel{overflow-x:auto}
+.hi{color:var(--red);font-weight:600}.lo{color:#1565c0;font-weight:600}
+.empty{color:var(--mut);text-align:center;padding:14px}
+.list{list-style:none;margin:0;padding:0}
+.list li{padding:8px 0;border-bottom:1px dotted var(--line)}.list li:last-child{border:0}
+.list small{display:block;color:var(--mut);font-size:12px}
+.mag{color:var(--red)}
+.more{text-align:right;margin:8px 0 0;font-size:14px}
+.picker select{padding:4px 8px;border:1px solid var(--line);font:inherit}
+.panel.typ{border-left:5px solid var(--red)}
+.warn{border-left:5px solid var(--yel)}.warn.lv-警戒{border-color:var(--org)}.warn.lv-嚴重{border-color:var(--red)}
+.tag{font-size:13px;background:var(--yel);color:#fff;padding:1px 8px;border-radius:2px}
+.lv-警戒 .tag{background:var(--org)}.lv-嚴重 .tag{background:var(--red)}
+.meta{color:var(--mut);font-size:13px;margin:0 0 6px}
+.prose{white-space:pre-wrap}
+.foot{background:#2b3440;color:#c7ced8;font-size:13px;padding:14px 0;text-align:center}

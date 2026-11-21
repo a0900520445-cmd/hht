@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<% if (typhoons.length) { typhoons.forEach(t => { %>
+<section class="panel typ"><h2>颱風消息：<%= t.name %>（<%= t.status %>）</h2>
+  <p>中心位置 <%= f.num(t.lat) %>°N <%= f.num(t.lon) %>°E，中心氣壓 <%= f.num(t.pressure) %> hPa，最大風速 <%= f.num(t.max_wind) %> m/s，向<%= t.heading || '—' %>移動，時速 <%= f.num(t.speed) %> 公里。<small>更新 <%= f.dt(t.updated_at) %></small></p></section>
+<% }) } %>
+<div class="grid2">
+  <section class="panel"><div class="ph"><h2>縣市天氣預報</h2><%- include('partials/locpicker') %></div><%- include('partials/fctable') %>
+    <p class="more"><a href="/forecast?loc=<%= locId %>">更多預報 »</a></p></section>
+  <aside>
+    <section class="panel"><h2>地震資訊</h2>
+      <ul class="list"><% if (!quakes.length) { %><li class="empty">無資料</li><% } %>
+      <% quakes.forEach(q => { %><li><b class="mag">M<%= q.magnitude %></b> <%= q.epicenter %><small><%= f.dt(q.occurred_at) %>　深度 <%= f.num(q.depth, ' km') %>　最大震度 <%= q.max_intensity || '—' %></small></li><% }) %></ul>
+      <p class="more"><a href="/earthquakes">更多地震 »</a></p></section>
+    <section class="panel"><h2>最新消息</h2>
+      <ul class="list"><% if (!news.length) { %><li class="empty">無資料</li><% } %>
+      <% news.forEach(n => { %><li><a href="/news/<%= n.id %>"><%= n.title %></a><small><%= n.category || '' %>　<%= f.dt(n.published_at) %></small></li><% }) %></ul></section>
+  </aside>
+</div>
+<section class="panel"><div class="ph"><h2>即時觀測</h2><small id="obsstamp"></small></div><div id="obsbox"><%- include('partials/obstable') %></div>
+  <p class="more"><a href="/observations">完整觀測資料 »</a></p></section>
+<%- include('partials/footer') %>
