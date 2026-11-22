@@ -1,5 +1,0 @@
-<%- include('_layout_top') %>
-<h1>後台總覽</h1>
-<div class="cards"><% Object.entries(modules).forEach(([k, m]) => { %>
-<a class="card" href="/admin/<%= k %>"><span><%= counts[k] %></span><%= m.label %></a><% }) %></div>
-</main></body></html>

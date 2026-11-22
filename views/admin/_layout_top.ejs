@@ -1,7 +1,0 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title><%= title %> | 後台</title><link rel="stylesheet" href="/css/admin.css"></head>
-<body><aside class="side"><div class="sb"><%= site.name %><small>後台管理</small></div>
-<a href="/admin" class="<%= !cur ? 'on' : '' %>">總覽</a>
-<% Object.entries(modules).forEach(([k, m]) => { %><a href="/admin/<%= k %>" class="<%= cur === k ? 'on' : '' %>"><%= m.label %></a><% }) %>
-<a href="/" target="_blank">開啟前台 ↗</a>
-<form method="post" action="/admin/logout"><button>登出</button></form></aside><main class="cont">
