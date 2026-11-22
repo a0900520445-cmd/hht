@@ -1,5 +1,0 @@
-<div class="hours">
-<% hourly.forEach((h, i) => { %>
-  <div class="hr" style="--d:<%= i %>"><span class="ht"><%= f.hour(h.forecast_time) %></span><%- f.icon(h.wx) %><b><%= f.num(h.temp) %>°</b><span class="hp"><%= f.num(h.pop, '%') %></span></div>
-<% }) %>
-</div>
