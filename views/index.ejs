@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<% const cur = locations.find(l => l.id === locId), o = obs.find(x => x.location_id === locId), t0 = forecasts[0]; %>
+<section class="hero tone-<%= f.tone(t0 && t0.wx) %>">
+  <div class="hl">
+    <div class="hloc"><%- include('partials/locpicker') %></div>
+    <div class="hbig"><%- f.icon(t0 && t0.wx) %><div><div class="temp"><%= o ? f.num(o.temp) : (t0 ? f.num(t0.temp_high) : '—') %><sup>°C</sup></div><div class="hwx"><%= t0 ? t0.wx : '尚無預報' %></div></div></div>
+    <p class="hsub"><%= cur ? cur.name : '' %>　<%= o ? '目前觀測 ' + f.dt(o.obs_time) : '今日預報' %></p>
+  </div>
+  <dl class="hstats">
+    <div><dt>今日高低溫</dt><dd><%= t0 ? f.num(t0.temp_high) + '° / ' + f.num(t0.temp_low) + '°' : '—' %></dd></div>
+    <div><dt>降雨機率</dt><dd><%= t0 ? f.num(t0.pop, '%') : '—' %></dd></div>
+    <div><dt>相對溼度</dt><dd><%= o ? f.num(o.humidity, '%') : '—' %></dd></div>
+    <div><dt>風</dt><dd><%= o ? f.windDir(o.wind_dir) + ' ' + f.beaufort(o.wind_speed) + '級' : '—' %></dd></div>
+    <div><dt>氣壓</dt><dd><%= o ? f.num(o.pressure, ' hPa') : '—' %></dd></div>
+    <div><dt>紫外線</dt><dd><%= t0 ? f.num(t0.uvi) : '—' %></dd></div>
+    <div><dt>空氣品質</dt><dd><%= air ? air.aqi + ' ' + (air.status || '') : '—' %></dd></div>
+  </dl>
+</section>
+
+<% typhoons.forEach(t => { %>
+<section class="panel typ"><h2>颱風消息：<%= t.name %>（<%= t.status %>）</h2>
+  <p>中心位置 <%= f.num(t.lat) %>°N <%= f.num(t.lon) %>°E，中心氣壓 <%= f.num(t.pressure) %> hPa，最大風速 <%= f.num(t.max_wind) %> m/s，向<%= t.heading || '—' %>移動，時速 <%= f.num(t.speed) %> 公里。</p></section>
+<% }) %>
+
+<% if (hourly && hourly.length) { %><section class="panel"><h2>未來 24 小時</h2><%- include('partials/hourly') %></section><% } %>
+<section class="panel"><div class="ph"><h2>未來一週天氣</h2><a class="more" href="/forecast?loc=<%= locId %>">逐日詳細 »</a></div><%- include('partials/weekly') %></section>
+
+<div class="grid2">
+  <section class="panel"><div class="ph"><h2>即時觀測</h2><small id="obsstamp"></small></div><div id="obsbox"><%- include('partials/obstable') %></div></section>
+  <aside>
+    <section class="panel"><h2>地震資訊</h2>
+      <ul class="list"><% if (!quakes.length) { %><li class="empty">無資料</li><% } %>
+      <% quakes.forEach(q => { %><li><b class="mag">M<%= q.magnitude %></b> <%= q.epicenter %><small><%= f.dt(q.occurred_at) %>　震度 <%= q.max_intensity || '—' %></small></li><% }) %></ul>
+      <p class="more"><a href="/earthquakes">更多 »</a></p></section>
+    <section class="panel"><h2>最新消息</h2>
+      <ul class="list"><% if (!news.length) { %><li class="empty">無資料</li><% } %>
+      <% news.forEach(n => { %><li><a href="/news/<%= n.id %>"><%= n.title %></a><small><%= n.category || '' %>　<%= f.dt(n.published_at) %></small></li><% }) %></ul></section>
+  </aside>
+</div>
+<%- include('partials/footer') %>

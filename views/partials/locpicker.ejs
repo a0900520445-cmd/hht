@@ -1,0 +1,4 @@
+<form class="picker" method="get"><label>地點
+  <select name="loc" onchange="this.form.submit()">
+    <% locations.forEach(l => { %><option value="<%= l.id %>" <%= l.id === locId ? 'selected' : '' %>><%= l.name %></option><% }) %>
+  </select></label></form>
