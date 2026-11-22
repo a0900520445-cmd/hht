@@ -26,6 +26,7 @@ app.use(session({
 
 app.locals.site = { name: '虛擬中央氣象局', en: 'Virtual Central Weather Bureau' };
 app.locals.f = require('./lib/format');
+app.locals.ver = Date.now(); // 樣式與腳本網址加版本號，換版後瀏覽器會重新下載
 app.use((req, res, next) => { res.locals.path = req.path; next(); });
 
 app.use('/api', (req, res, next) => { res.set('Access-Control-Allow-Origin', '*'); next(); });
