@@ -1,0 +1,274 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="天氣">
+<meta name="theme-color" content="#2a7de1"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><title>天氣</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#2a7de1;color:#fff;font:16px/1.4 -apple-system,"SF Pro Text","PingFang TC","Noto Sans TC",system-ui,sans-serif;overscroll-behavior:none}
+#sky{position:fixed;inset:0;overflow:hidden;background:linear-gradient(var(--a),var(--b));transition:background .8s}
+body{--a:#3d92ee;--b:#8fd2ff}
+body[data-k=clear][data-n="1"]{--a:#0a1a3e;--b:#2c418a}
+body[data-k=cloudy]{--a:#6a92bd;--b:#acc4da}body[data-k=cloudy][data-n="1"]{--a:#192338;--b:#3a4c69}
+body[data-k=overcast]{--a:#79858f;--b:#a6afba}body[data-k=overcast][data-n="1"]{--a:#212832;--b:#3e4755}
+body[data-k=rain]{--a:#46586d;--b:#7c90a6}body[data-k=rain][data-n="1"]{--a:#121a25;--b:#2b394a}
+body[data-k=storm]{--a:#2b3441;--b:#566375}body[data-k=storm][data-n="1"]{--a:#0a0f16;--b:#212b39}
+body[data-k=fog]{--a:#98a3af;--b:#c5ccd4}body[data-k=fog][data-n="1"]{--a:#29303a;--b:#49525d}
+.bgimg{position:absolute;inset:0;background:var(--img) center/cover;opacity:.9}
+.sun{position:absolute;top:-80px;right:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,150,.95) 0,rgba(255,214,90,.45) 35%,transparent 68%);opacity:0;transition:opacity .8s;animation:pulse 6s ease-in-out infinite}
+body[data-k=clear][data-n="0"] .sun,body[data-k=cloudy][data-n="0"] .sun{opacity:1}
+body[data-k=clear][data-n="1"] .sun{opacity:.7;background:radial-gradient(circle,rgba(235,240,255,.95) 0,rgba(200,215,255,.35) 22%,transparent 55%);width:240px;height:240px}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.cl{position:absolute;width:420px;height:150px;border-radius:80px;background:rgba(255,255,255,.55);filter:blur(28px);opacity:0;transition:opacity .8s;animation:drift 38s linear infinite}
+.c1{top:12%;left:-30%}.c2{top:30%;left:-60%;animation-duration:55s;width:520px}.c3{top:5%;left:-10%;animation-duration:70s;height:120px}
+@keyframes drift{to{transform:translateX(160vw)}}
+body:not([data-k=clear]) .cl{opacity:.8}body[data-k=overcast] .cl,body[data-k=rain] .cl,body[data-k=storm] .cl{background:rgba(120,130,145,.7)}
+body[data-k=fog] .cl{background:rgba(235,238,242,.8);opacity:1}body[data-n="1"] .cl{background:rgba(60,72,95,.6)}
+#stars{position:absolute;inset:0;opacity:0;transition:opacity .8s}
+body[data-n="1"][data-k=clear] #stars,body[data-n="1"][data-k=cloudy] #stars{opacity:1}
+#stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.2}}
+#fx{position:absolute;inset:0;width:100%;height:100%}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+body[data-k=storm] #flash{animation:fl 7s infinite}
+@keyframes fl{0%,92%,100%{opacity:0}93%{opacity:.55}94%{opacity:.05}95%{opacity:.4}97%{opacity:0}}
+#app{position:relative;height:100%;overflow-y:auto;overflow-x:hidden;padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 96px);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#app::-webkit-scrollbar{display:none}
+.view{display:none}.view.on{display:block;animation:up .4s both}
+.top{display:flex;justify-content:space-between;align-items:center}
+.vt{font-size:28px;margin:6px 0 14px;font-weight:600}
+.pill{border:0;color:#fff;background:rgba(255,255,255,.2);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:99px;padding:8px 14px;font:inherit;font-size:14px;transition:transform .2s,background .2s}.pill:active{transform:scale(.94);background:rgba(255,255,255,.32)}
+.hero{text-align:center;padding:22px 0 14px;transform-origin:top center}
+.city{font-size:30px;font-weight:500;text-shadow:0 1px 8px rgba(0,0,0,.15)}
+.temp{font-size:104px;font-weight:200;line-height:1.05;letter-spacing:-4px;margin-left:14px;animation:up .7s both}
+.wx{font-size:20px;font-weight:500;margin-top:-4px}.hl{font-size:17px;margin-top:2px}.fl{font-size:14px;opacity:.85;margin-top:2px}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.warn{margin:6px 0 12px;padding:11px 14px;border-radius:16px;background:rgba(255,196,0,.3);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-size:14px;cursor:pointer;animation:up .6s .1s both}
+.warn.lv-嚴重{background:rgba(255,70,60,.38)}.warn.lv-警戒{background:rgba(255,140,0,.34)}
+.card{background:rgba(255,255,255,.17);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border-radius:22px;padding:14px 16px;margin-bottom:12px;animation:up .6s both;animation-delay:calc(var(--i,0) * 70ms + 120ms);border:1px solid rgba(255,255,255,.12)}
+body[data-n="0"][data-k=fog] .card,body[data-n="0"][data-k=overcast] .card{background:rgba(70,80,95,.25)}
+.card h3{margin:0 0 10px;font-size:12.5px;font-weight:600;letter-spacing:.5px;opacity:.75}
+.hrs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:0 -6px;padding:0 6px}.hrs::-webkit-scrollbar{display:none}
+.h{flex:none;width:58px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:14px}.h span{opacity:.85}.h b{font-size:17px;font-weight:500}.h small{font-size:11.5px;color:#a9d8ff;min-height:14px}
+.wi{width:32px;height:32px}
+.d{display:grid;grid-template-columns:44px 36px 40px 30px 1fr 30px;align-items:center;gap:6px;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:16px;cursor:pointer;transition:background .2s}.d:active{background:rgba(255,255,255,.1)}.d:first-of-type{border-top:0}
+.d .wi{width:28px;height:28px}.d small{color:#a9d8ff;font-size:12px}.d .lo{opacity:.65;text-align:right}
+.bar{height:5px;border-radius:5px;background:rgba(0,0,0,.2);position:relative}.bar u{position:absolute;top:0;bottom:0;border-radius:5px;background:linear-gradient(90deg,#6cc5ff,#ffd84a,#ff9a3c)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.tiles .card{margin:0;min-height:112px}.tiles .w2{grid-column:span 2}
+.tiles b{font-size:30px;font-weight:300;display:block;line-height:1.15}.tiles small,.sm{display:block;margin-top:4px;opacity:.85;font-size:13px}
+.gauge{height:6px;border-radius:6px;margin:10px 0 2px;position:relative;background:linear-gradient(90deg,#4ade80,#facc15,#fb923c,#f87171,#c084fc)}
+.gauge i{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid rgba(0,0,0,.25);transform:translateX(-50%)}
+.cmp{width:96px;height:96px;flex:none}.wrow{display:flex;align-items:center;gap:16px}
+.sunrow{display:flex;justify-content:space-between;font-size:15px}.sunrow b{font-size:22px;font-weight:400;display:block}
+svg text{fill:#fff;font-family:inherit}
+.advice{font-size:15px;line-height:1.6}.advice li{margin:4px 0}.advice ul{padding-left:20px;margin:0}
+.upd{text-align:center;font-size:12px;opacity:.7;margin:16px 0}
+.row2{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid rgba(255,255,255,.14);font-size:15px}.row2:first-of-type{border:0}.row2 small{opacity:.75;display:block;font-size:12.5px}
+.chip{display:inline-block;padding:1px 10px;border-radius:99px;background:rgba(255,255,255,.25);font-size:13px;margin-right:6px}
+.mag{font-size:26px;font-weight:300;min-width:56px}
+details{border-top:1px solid rgba(255,255,255,.14);padding:10px 0}details:first-of-type{border:0}summary{cursor:pointer;list-style:none}summary::-webkit-details-marker{display:none}details p{margin:8px 0 0;opacity:.9;font-size:14.5px;white-space:pre-wrap}
+#map{height:calc(100vh - 290px);min-height:320px;border-radius:20px;overflow:hidden;background:#cfd9e6}
+.rctl{display:flex;align-items:center;gap:12px;margin-top:12px}.rctl input{flex:1}
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;background:rgba(20,28,40,.55);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid rgba(255,255,255,.12);padding:6px 6px calc(env(safe-area-inset-bottom) + 6px)}
+#tabs button{flex:1;background:none;border:0;color:rgba(255,255,255,.6);font:inherit;font-size:11.5px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;transition:color .25s,transform .25s}
+#tabs button.on{color:#fff}#tabs button:active{transform:scale(.92)}
+#tabs svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#sheet{position:fixed;inset:0;pointer-events:none;z-index:20}
+#sheet .bk{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:opacity .3s}
+#sheet .pn{position:absolute;left:0;right:0;bottom:0;max-height:82%;overflow:auto;background:rgba(28,36,48,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:26px 26px 0 0;padding:10px 20px calc(env(safe-area-inset-bottom) + 24px);transform:translateY(100%);transition:transform .4s cubic-bezier(.22,.8,.3,1)}
+#sheet .pn::before{content:"";display:block;width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.3);margin:0 auto 12px}
+#sheet.on{pointer-events:auto}#sheet.on .bk{opacity:1}#sheet.on .pn{transform:none}
+.pn h2{margin:0 0 8px;font-size:20px}.pn .big{display:flex;align-items:center;gap:14px;margin-bottom:6px}.pn .big .wi{width:60px;height:60px}
+.loc{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.1);color:#fff;font:inherit;padding:12px 2px;text-align:left}.loc:active{background:rgba(255,255,255,.08)}
+.loc .wi{width:30px;height:30px}.loc div{flex:1}.loc small{display:block;opacity:.6;font-size:12.5px}.loc b{font-size:24px;font-weight:300}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 84px);transform:translate(-50%,40px);background:rgba(0,0,0,.7);padding:9px 16px;border-radius:99px;font-size:14px;opacity:0;transition:.35s;z-index:30}#toast.on{opacity:1;transform:translate(-50%,0)}
+</style></head><body data-k="clear" data-n="0">
+<div id="sky"><div class="bgimg" id="bgi"></div><div id="stars"></div><div class="sun"></div><div class="cl c1"></div><div class="cl c2"></div><div class="cl c3"></div><canvas id="fx"></canvas><div id="flash"></div></div>
+<div id="app">
+ <section class="view on" id="v-wx"><div class="top"><button class="pill" id="pick">📍 選擇地點</button><button class="pill" id="ref">更新</button></div><div id="out"></div></section>
+ <section class="view" id="v-radar"><h1 class="vt">雷達回波</h1><div id="map"></div><div class="rctl"><button class="pill" id="rplay">暫停</button><input type="range" id="rslide" min="0" value="0"></div><p class="sm" id="rtime"></p></section>
+ <section class="view" id="v-quake"><h1 class="vt">地震資訊</h1><div id="qout"></div></section>
+ <section class="view" id="v-more"><h1 class="vt">更多資訊</h1><div id="mout"></div></section>
+</div>
+<nav id="tabs">
+ <button class="on" data-v="wx"><svg viewBox="0 0 24 24"><path d="M7 18a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6 1.6A3.3 3.3 0 0 1 17 18z"/></svg>天氣</button>
+ <button data-v="radar"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/></svg>雷達</button>
+ <button data-v="quake"><svg viewBox="0 0 24 24"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg>地震</button>
+ <button data-v="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>更多</button>
+</nav>
+<div id="sheet"><div class="bk"></div><div class="pn" id="pn"></div></div><div id="toast"></div>
+<script>
+const API = location.hostname.endsWith('onrender.com') ? '' : 'https://hht-katk.onrender.com';
+const $ = s => document.querySelector(s), V = (x, u = '') => x == null || x === '' ? '—' : x + u;
+let locs = [], cur = +localStorage.cid || 0, tm, D = null, W = [], view = 'wx';
+const toast = t => { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(tm); tm = setTimeout(() => e.classList.remove('on'), 2200); };
+const j = async p => { const r = await fetch(API + p); if (!r.ok) throw 0; return r.json(); };
+const kind = w => /雷/.test(w) ? 'storm' : /雨/.test(w) ? 'rain' : /霧/.test(w) ? 'fog' : /陰/.test(w) ? 'overcast' : /多雲/.test(w) ? 'cloudy' : 'clear';
+const hm = d => d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' });
+const fdt = v => v ? new Date(v).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '—';
+const dayName = (s, i) => i === 0 ? '今天' : '週' + '日一二三四五六'[new Date(s + 'T00:00:00').getDay()];
+// ---- 圖示 ----
+const S = b => `<svg class="wi" width="32" height="32" viewBox="0 0 56 56">${b}</svg>`, cl = (c, t = '') => `<path ${t} d="M15 42a9 9 0 0 1 1-18 13 13 0 0 1 25 4 7.5 7.5 0 0 1-1 14z" fill="${c}"/>`;
+const sun = (x = 28, y = 28, r = 9) => `<g stroke="#ffc933" stroke-width="3" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a => { const R = a * Math.PI / 180, c = Math.cos(R), s = Math.sin(R); return `<line x1="${x + c*(r+4)}" y1="${y + s*(r+4)}" x2="${x + c*(r+8)}" y2="${y + s*(r+8)}"/>`; }).join('')}</g><circle cx="${x}" cy="${y}" r="${r}" fill="#ffd54a"/>`;
+const ico = w => { const k = kind(w || '');
+  if (k === 'storm') return S(cl('#cfd6e0', 'transform="translate(0,-4)"') + '<path d="M30 36l-6 9h5l-2 8 8-11h-5l3-6z" fill="#ffd54a"/>');
+  if (k === 'rain') return S(cl('#e0e7ef', 'transform="translate(0,-5)"') + '<g stroke="#7cc0ff" stroke-width="3" stroke-linecap="round"><line x1="20" y1="47" x2="18" y2="53"/><line x1="29" y1="47" x2="27" y2="53"/><line x1="38" y1="47" x2="36" y2="53"/></g>');
+  if (k === 'fog') return S(cl('#eef1f5', 'transform="translate(0,-6)"') + '<g stroke="#dfe5ec" stroke-width="3" stroke-linecap="round"><line x1="12" y1="45" x2="44" y2="45"/><line x1="18" y1="51" x2="50" y2="51"/></g>');
+  if (k === 'overcast') return S(cl('#dfe5ec'));
+  if (k === 'cloudy') return S(sun(21, 20, 7) + cl('#f4f7fb', 'transform="translate(2,4)"'));
+  return S(sun()); };
+// ---- 計算 ----
+const feels = (T, rh, ws) => T + 0.33 * (rh / 100 * 6.105 * Math.exp(17.27 * T / (237.7 + T))) - 0.7 * ws - 4;
+const dew = (T, rh) => { const g = Math.log(rh / 100) + 17.27 * T / (237.7 + T); return 237.7 * g / (17.27 - g); };
+function sunT(d, lat, lon) {
+  const r = Math.PI / 180, y = d.getFullYear(), m = d.getMonth(), dd = d.getDate(), n = Math.floor((Date.UTC(y, m, dd) - Date.UTC(y, 0, 0)) / 864e5), g = 2 * Math.PI / 365 * (n - 1);
+  const eq = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+  const dc = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+  const ha = Math.acos(Math.cos(90.833 * r) / (Math.cos(lat * r) * Math.cos(dc)) - Math.tan(lat * r) * Math.tan(dc)) / r, b = Date.UTC(y, m, dd);
+  return [new Date(b + (720 - 4 * (lon + ha) - eq) * 6e4), new Date(b + (720 - 4 * (lon - ha) - eq) * 6e4)];
+}
+const moon = d => { const age = (((d.getTime() / 864e5 + 2440587.5) - 2451550.1) / 29.530588853 % 1 + 1) % 1; return { e: ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'][Math.round(age * 8) % 8], ill: Math.round((1 - Math.cos(2 * Math.PI * age)) / 2 * 100),
+  n: ['新月', '娥眉月', '上弦月', '盈凸月', '滿月', '虧凸月', '下弦月', '殘月'][Math.round(age * 8) % 8] }; };
+const BF = ['無風', '軟風', '輕風', '微風', '和風', '清風', '強風', '疾風', '大風', '烈風', '狂風', '暴風', '颶風'], BT = [0.3, 1.6, 3.4, 5.5, 8, 10.8, 13.9, 17.2, 20.8, 24.5, 28.5, 32.7];
+const bf = ms => { const i = BT.findIndex(x => ms < x); return i < 0 ? 12 : i; };
+const WD = ['北', '北北東', '東北', '東北東', '東', '東南東', '東南', '南南東', '南', '南南西', '西南', '西南西', '西', '西北西', '西北', '北北西'], wdir = d => WD[Math.round(d / 22.5) % 16];
+const uvl = u => u >= 11 ? '危險' : u >= 8 ? '過量' : u >= 6 ? '高' : u >= 3 ? '中等' : '低';
+const uvAdv = u => u >= 8 ? '避免正午外出，務必防曬' : u >= 6 ? '外出請擦防曬、戴帽子' : u >= 3 ? '長時間外出建議防曬' : '不需特別防護';
+const aqiC = a => a <= 50 ? '良好' : a <= 100 ? '普通' : a <= 150 ? '對敏感族群不健康' : a <= 200 ? '對所有族群不健康' : '非常不健康';
+const advice = (T, t0, a) => { const l = []; if (T != null) l.push(T <= 14 ? '天氣寒冷，建議穿厚外套保暖' : T <= 19 ? '稍有涼意，帶一件外套' : T >= 30 ? '天氣炎熱，多補充水分' : '體感舒適，穿著輕便即可');
+  if (t0.pop >= 50) l.push('降雨機率高，出門記得帶傘'); else if (t0.pop >= 30) l.push('有機會下雨，可備折疊傘');
+  if (t0.uvi >= 6) l.push('紫外線偏強，注意防曬'); if (a && a.aqi > 100) l.push('空氣品質不佳，敏感族群減少戶外活動'); return l; };
+// ---- 圖表 ----
+function tempChart(hr) {
+  const v = hr.map(x => +x.temp).filter(x => !isNaN(x)); if (v.length < 3) return '';
+  const mn = Math.min(...v), mx = Math.max(...v), sp = Math.max(mx - mn, 1), n = v.length, X = i => 14 + i * (292 / (n - 1)), Y = t => 14 + (1 - (t - mn) / sp) * 62;
+  const pts = v.map((t, i) => `${X(i).toFixed(1)},${Y(t).toFixed(1)}`).join(' '), imx = v.indexOf(mx), imn = v.indexOf(mn);
+  return `<svg viewBox="0 0 320 100" style="width:100%"><defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+  <polygon points="14,92 ${pts} 306,92" fill="url(#tg)"/><polyline points="${pts}" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="${X(imx)}" cy="${Y(mx)}" r="3.5" fill="#fff"/><text x="${X(imx)}" y="${Y(mx) - 7}" font-size="11" text-anchor="middle">${mx.toFixed(0)}°</text>
+  <circle cx="${X(imn)}" cy="${Y(mn)}" r="3.5" fill="#fff"/><text x="${X(imn)}" y="${Y(mn) + 15}" font-size="11" text-anchor="middle">${mn.toFixed(0)}°</text></svg>`;
+}
+function rainChart(hr) {
+  const n = hr.length; if (n < 3) return ''; const w = 292 / n;
+  return `<svg viewBox="0 0 320 84" style="width:100%">${hr.map((x, i) => { const p = +x.pop || 0, h = Math.max(p * .56, 2); return `<rect x="${14 + i * w + 1}" y="${64 - h}" width="${Math.max(w - 3, 3)}" height="${h}" rx="2" fill="#7cc0ff" opacity="${.35 + p / 160}"/>`; }).join('')}
+  ${hr.map((x, i) => i % 4 === 0 ? `<text x="${14 + i * w + w / 2}" y="80" font-size="10" text-anchor="middle" opacity=".75">${new Date(x.forecast_time).getHours()}時</text>` : '').join('')}
+  <text x="14" y="10" font-size="10" opacity=".75">100%</text></svg>`;
+}
+const compass = (deg, spd) => `<svg class="cmp" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+  ${[0, 90, 180, 270].map((a, i) => `<text x="${50 + 35 * Math.sin(a * Math.PI / 180)}" y="${54 - 35 * Math.cos(a * Math.PI / 180)}" font-size="11" text-anchor="middle" opacity=".8">${'北東南西'[i]}</text>`).join('')}
+  <g transform="rotate(${deg || 0} 50 50)"><path d="M50 12 L56 30 L44 30Z" fill="#fff"/></g><text x="50" y="55" font-size="17" text-anchor="middle">${spd ?? '—'}</text><text x="50" y="68" font-size="8.5" text-anchor="middle" opacity=".75">m/s</text></svg>`;
+const card = (t, b, i = 0, c = '') => `<div class="card ${c}" style="--i:${i}"><h3>${t}</h3>${b}</div>`;
+// ---- 背景特效 ----
+const cv = $('#fx'), g = cv.getContext('2d'); let drops = [], raf;
+const fit = () => { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }; fit(); addEventListener('resize', fit);
+const rain = on => { cancelAnimationFrame(raf); g.clearRect(0, 0, cv.width, cv.height); if (!on) return;
+  drops = Array.from({ length: 110 }, () => ({ x: Math.random() * cv.width, y: Math.random() * cv.height, l: 12 + Math.random() * 18, v: 14 + Math.random() * 12 }));
+  const f = () => { g.clearRect(0, 0, cv.width, cv.height); g.strokeStyle = 'rgba(210,230,255,.45)'; g.lineWidth = 1.4 * devicePixelRatio; g.beginPath();
+    drops.forEach(d => { g.moveTo(d.x, d.y); g.lineTo(d.x - 3, d.y + d.l * devicePixelRatio); d.y += d.v * devicePixelRatio; d.x -= 1.2; if (d.y > cv.height) { d.y = -20; d.x = Math.random() * cv.width; } }); g.stroke(); raf = requestAnimationFrame(f); }; f(); };
+$('#stars').innerHTML = Array.from({ length: 70 }, () => `<i style="left:${Math.random()*100}%;top:${Math.random()*60}%;animation-delay:${Math.random()*3}s"></i>`).join('');
+// ---- 彈出面板 ----
+const sheet = html => { $('#pn').innerHTML = html; $('#sheet').classList.add('on'); $('#pn').scrollTop = 0; };
+const closeSheet = () => $('#sheet').classList.remove('on');
+function dayDetail(i) {
+  const x = D.daily[i], L = D.location || {}, dt = new Date(x.forecast_date + 'T00:00:00'), [r, s] = sunT(dt, +L.lat || 23.7, +L.lon || 121), mo = moon(dt);
+  const row = (a, b, c = '') => `<div class="row2"><span>${a}${c ? `<small>${c}</small>` : ''}</span><b>${b}</b></div>`;
+  sheet(`<h2>${x.forecast_date}　${dayName(x.forecast_date, i)}</h2><div class="big">${ico(x.wx)}<div><b style="font-size:22px">${x.wx}</b><small class="sm">${V(x.comfort)}</small></div></div>
+  ${row('最高溫', V(x.temp_high, '°C'))}${row('最低溫', V(x.temp_low, '°C'))}${row('日夜溫差', x.temp_high != null && x.temp_low != null ? (x.temp_high - x.temp_low).toFixed(1) + '°C' : '—')}
+  ${row('降雨機率', V(x.pop, '%'), x.pop >= 60 ? '很可能下雨' : x.pop >= 30 ? '可能有雨' : '不太會下雨')}${row('風向風速', V(x.wind))}${row('紫外線指數', V(x.uvi), x.uvi != null ? uvl(x.uvi) + '・' + uvAdv(x.uvi) : '')}
+  ${row('日出', hm(r))}${row('日落', hm(s))}${row('白晝長度', Math.floor((s - r) / 36e5) + ' 小時 ' + Math.round((s - r) / 6e4 % 60) + ' 分')}${row('月相', mo.e + ' ' + mo.n, '月亮照亮 ' + mo.ill + '%')}`);
+}
+function warnDetail(i) { const w = W[i]; sheet(`<h2>${w.title}</h2><p><span class="chip">${w.level}</span><span class="chip">${w.type}</span></p><p class="sm">發布 ${fdt(w.issued_at)}${w.expires_at ? '　預計解除 ' + fdt(w.expires_at) : ''}</p>${w.areas ? `<p><b>影響地區：</b>${w.areas}</p>` : ''}<p style="white-space:pre-wrap">${w.content || ''}</p>`); }
+// ---- 天氣頁 ----
+function render(d, warns) {
+  D = d; W = warns || [];
+  const dl = d.daily || [], t0 = dl[0] || {}, o = d.now || {}, hr = d.hourly || [], a = d.air, L = d.location || {}, now = new Date();
+  const w = t0.wx || (hr[0] && hr[0].wx) || '晴', k = kind(w), h = now.getHours(), night = (h < 6 || h >= 18) ? 1 : 0;
+  document.body.dataset.k = k; document.body.dataset.n = night;
+  const img = `url(bg/${k}-${night ? 'night' : 'day'}.jpg)`; $('#bgi').style.setProperty('--img', img); rain(k === 'rain' || k === 'storm');
+  const T = o.temp != null ? +o.temp : (t0.temp_high != null ? +t0.temp_high : null), fl = (T != null && o.humidity != null) ? feels(T, o.humidity, +o.wind_speed || 0) : null;
+  const hs = dl.map(x => +x.temp_high), ls = dl.map(x => +x.temp_low), mx = Math.max(...hs), mn = Math.min(...ls), sp = Math.max(mx - mn, 1);
+  const [sr, ss] = sunT(now, +L.lat || 23.7, +L.lon || 121), p = Math.min(Math.max((now - sr) / (ss - sr), 0), 1), mo = moon(now), ws = o.wind_speed != null ? +o.wind_speed : null;
+  const adv = advice(T, t0, a);
+  $('#out').innerHTML = `<div class="hero" id="hero"><div class="city">${L.name || ''}</div><div class="temp">${T != null ? Math.round(T) : '—'}°</div><div class="wx">${w}</div><div class="hl">最高 ${V(t0.temp_high)}°　最低 ${V(t0.temp_low)}°</div>${fl != null ? `<div class="fl">體感 ${Math.round(fl)}°</div>` : ''}</div>
+  ${W.slice(0, 3).map((x, i) => `<div class="warn lv-${x.level}" data-w="${i}">⚠️ ${x.title}　<small>點開看詳情</small></div>`).join('')}
+  ${hr.length ? card('逐時預報', `<div class="hrs">${hr.map((x, i) => `<div class="h"><span>${i ? new Date(x.forecast_time).getHours() + '時' : '現在'}</span>${ico(x.wx)}<b>${V(x.temp)}°</b><small>${x.pop >= 20 ? x.pop + '%' : ''}</small></div>`).join('')}</div>`, 0) : ''}
+  ${hr.length > 2 ? card('24 小時氣溫變化', tempChart(hr), 1) + card('24 小時降雨機率', rainChart(hr), 2) : ''}
+  ${dl.length ? card(`未來 ${dl.length} 天（點日期看詳情）`, dl.map((x, i) => `<div class="d" data-d="${i}"><span>${dayName(x.forecast_date, i)}</span>${ico(x.wx)}<small>${x.pop >= 20 ? x.pop + '%' : ''}</small><span class="lo">${V(x.temp_low)}°</span><div class="bar"><u style="left:${((x.temp_low - mn) / sp * 100).toFixed(0)}%;width:${Math.max((x.temp_high - x.temp_low) / sp * 100, 10).toFixed(0)}%"></u></div><span>${V(x.temp_high)}°</span></div>`).join(''), 3) : card('預報', '目前沒有預報資料', 3)}
+  ${adv.length ? card('生活建議', `<div class="advice"><ul>${adv.map(x => `<li>${x}</li>`).join('')}</ul></div>`, 4) : ''}
+  <div class="tiles">
+   ${card('體感溫度', `<b>${fl != null ? Math.round(fl) + '°' : '—'}</b><small>${fl != null ? (fl < T - 1 ? '比實際溫度更涼' : fl > T + 1 ? '比實際溫度更悶熱' : '與實際溫度相近') : ''}</small>`, 5)}
+   ${card('空氣品質', `<b>${a ? a.aqi : '—'}</b><small>${a ? (a.status || aqiC(a.aqi)) : ''}${a && a.pm25 != null ? '・PM2.5 ' + a.pm25 : ''}</small>${a ? `<div class="gauge"><i style="left:${Math.min(a.aqi / 300, 1) * 100}%"></i></div>` : ''}`, 6)}
+   ${card('紫外線', `<b>${V(t0.uvi)}</b><small>${t0.uvi != null ? uvl(t0.uvi) + '・' + uvAdv(t0.uvi) : ''}</small>${t0.uvi != null ? `<div class="gauge" style="background:linear-gradient(90deg,#4ade80,#facc15,#fb923c,#f87171,#c084fc)"><i style="left:${Math.min(t0.uvi / 12, 1) * 100}%"></i></div>` : ''}`, 7)}
+   ${card('相對溼度', `<b>${V(o.humidity, '%')}</b><small>${o.humidity != null && T != null ? '露點 ' + dew(T, o.humidity).toFixed(0) + '°' : ''}</small>`, 8)}
+   ${card('風', `<div class="wrow">${compass(o.wind_dir, ws != null ? ws.toFixed(1) : null)}<div><b style="font-size:22px">${ws != null ? bf(ws) + ' 級' : '—'}</b><small>${ws != null ? BF[bf(ws)] : ''}</small><small>${o.wind_dir != null ? wdir(o.wind_dir) + '風　' + o.wind_dir + '°' : ''}</small></div></div>`, 9, 'w2')}
+   ${card('氣壓', `<b>${V(o.pressure)}</b><small>hPa${o.pressure != null ? '・' + (o.pressure >= 1020 ? '偏高，天氣穩定' : o.pressure <= 1008 ? '偏低，留意降雨' : '正常') : ''}</small>`, 10)}
+   ${card('能見度', `<b>${V(o.visibility)}</b><small>公里・${o.visibility != null ? (o.visibility >= 10 ? '良好' : o.visibility >= 4 ? '普通' : '偏低') : ''}</small>`, 11)}
+   ${card('降雨', `<b>${V(o.rain_1h)}</b><small>mm / 小時・降雨機率 ${V(t0.pop, '%')}</small>`, 12)}
+   ${card('今日高低溫', `<b style="font-size:24px">${V(t0.temp_high)}° / ${V(t0.temp_low)}°</b><small>${t0.temp_high != null ? '溫差 ' + (t0.temp_high - t0.temp_low).toFixed(1) + '°' : ''}</small>`, 13)}
+   ${card('日出・日落', `<div class="sunrow"><span>日出<b>${hm(sr)}</b></span><span style="text-align:right">日落<b>${hm(ss)}</b></span></div>
+     <svg viewBox="0 0 120 62" style="width:100%;margin-top:6px"><path d="M10 56 A50 50 0 0 1 110 56" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="3 4"/><line x1="4" y1="56" x2="116" y2="56" stroke="rgba(255,255,255,.35)"/>
+     <circle cx="${60 - 50 * Math.cos(p * Math.PI)}" cy="${56 - 50 * Math.sin(p * Math.PI)}" r="5" fill="${p > 0 && p < 1 ? '#ffd54a' : 'rgba(255,255,255,.4)'}"/></svg>
+     <small>白晝 ${Math.floor((ss - sr) / 36e5)} 小時 ${Math.round((ss - sr) / 6e4 % 60)} 分</small>`, 14, 'w2')}
+   ${card('月相', `<b>${mo.e}</b><small>${mo.n}・照亮 ${mo.ill}%</small>`, 15)}
+   ${card('舒適度', `<b style="font-size:22px">${V(t0.comfort)}</b><small>${V(t0.wind)}</small>`, 16)}
+  </div><div class="upd">更新於 ${new Date(d.updated).toLocaleTimeString('zh-TW', { hour12: false })}　資料來源：虛擬中央氣象局</div>`;
+}
+async function load(q) {
+  try {
+    if (!locs.length) { locs = await j('/api/overview'); if (!locs.find(l => l.id === cur)) cur = (locs[0] || {}).id; }
+    const [d, w] = await Promise.all([j('/api/weather/' + cur), j('/api/warnings')]);
+    render(d, w); localStorage.cache = JSON.stringify([d, w]); if (q === 'm') toast('已更新');
+  } catch (e) { const c = localStorage.cache; if (c) { render(...JSON.parse(c)); toast('目前離線，顯示上次的資料'); } else toast('無法連線，請檢查網路'); }
+}
+async function openPicker() {
+  try { locs = await j('/api/overview'); } catch (e) {}
+  sheet(`<h2>選擇地點</h2>${locs.map(l => `<button class="loc" data-id="${l.id}">${ico(l.wx)}<div>${l.name}<small>${l.region || ''}${l.high != null ? '・' + l.high + '° / ' + l.low + '°' : ''}</small></div><b>${l.temp != null ? Math.round(l.temp) + '°' : '—'}</b></button>`).join('')}`);
+}
+// ---- 其他分頁 ----
+async function loadQuake() {
+  try { const q = await j('/api/quakes'); $('#qout').innerHTML = q.length ? card('最近地震', q.map(x => `<details><summary><div class="row2"><span style="display:flex;gap:12px;align-items:center"><span class="mag" style="color:${x.magnitude >= 5 ? '#ff8a80' : x.magnitude >= 4 ? '#ffd180' : '#fff'}">${(+x.magnitude).toFixed(1)}</span><span>${x.epicenter}<small>${fdt(x.occurred_at)}</small></span></span><span style="text-align:right">震度 ${V(x.max_intensity)}<small>深度 ${V(x.depth, ' km')}</small></span></div></summary>${x.note ? `<p>${x.note}</p>` : ''}</details>`).join('')) : card('最近地震', '目前沒有資料'); } catch (e) { toast('無法載入地震資料'); }
+}
+async function loadMore() {
+  try {
+    const [ty, wn, oc, nw] = await Promise.all([j('/api/typhoons'), j('/api/warnings'), j('/api/ocean'), j('/api/news')]);
+    W = wn;
+    $('#mout').innerHTML = card('颱風消息', ty.length ? ty.map(t => `<div class="row2"><span><b>${t.name}</b>（${V(t.status)}）<small>中心 ${V(t.lat)}°N ${V(t.lon)}°E・氣壓 ${V(t.pressure)} hPa</small><small>最大風速 ${V(t.max_wind)} m/s・陣風 ${V(t.gust)} m/s</small><small>向${V(t.heading)}移動・時速 ${V(t.speed)} 公里</small></span><small>${fdt(t.updated_at)}</small></div>`).join('') : '目前沒有颱風警報', 0)
+    + card('天氣警特報', wn.length ? wn.map((x, i) => `<div class="row2" data-w="${i}" style="cursor:pointer"><span><span class="chip">${x.level}</span>${x.title}<small>${V(x.areas)}</small></span><small>${fdt(x.issued_at)}</small></div>`).join('') : '目前沒有生效中的警特報', 1)
+    + card('海象資訊', oc.length ? oc.map(x => `<div class="row2"><span><b>${x.station}</b><small>${V(x.forecast)}</small><small>浪高 ${V(x.wave_height, ' m')}・週期 ${V(x.wave_period, ' s')}・海溫 ${V(x.sea_temp, '°C')}・${V(x.tide)}</small></span><small>${fdt(x.obs_time)}</small></div>`).join('') : '沒有資料', 2)
+    + card('最新消息', nw.length ? nw.map(n => `<details><summary><div class="row2"><span>${n.title}<small>${V(n.category)}</small></span><small>${fdt(n.published_at)}</small></div></summary><p>${n.content || ''}</p></details>`).join('') : '沒有消息', 3);
+  } catch (e) { toast('無法載入資料'); }
+}
+let map, layers = [], frames = [], ri = 0, rt;
+const ld = (t, u) => new Promise(r => { const e = document.createElement(t); if (t === 'link') { e.rel = 'stylesheet'; e.href = u; } else e.src = u; e.onload = r; e.onerror = r; document.head.appendChild(e); });
+async function initRadar() {
+  if (map) return map.invalidateSize();
+  await ld('link', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'); await ld('script', 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js');
+  if (!window.L) return $('#rtime').textContent = '地圖載入失敗，請檢查網路';
+  map = L.map('map', { zoomControl: false }).setView([23.7, 121], 7);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 12, attribution: '© OSM © CARTO' }).addTo(map);
+  locs.forEach(l => l.lat && L.circleMarker([l.lat, l.lon], { radius: 4, color: '#145da0', weight: 2, fillColor: '#fff', fillOpacity: 1 }).bindTooltip(l.name + ' ' + (l.temp != null ? Math.round(l.temp) + '°' : '')).addTo(map));
+  try {
+    const d = await (await fetch('https://api.rainviewer.com/public/weather-maps.json')).json(); frames = [...d.radar.past, ...(d.radar.nowcast || [])];
+    layers = frames.map(f => L.tileLayer(`${d.host}${f.path}/256/{z}/{x}/{y}/2/1_1.png`, { opacity: 0, maxNativeZoom: 7, maxZoom: 12 }).addTo(map));
+    const sl = $('#rslide'); sl.max = frames.length - 1; ri = d.radar.past.length - 1;
+    const show = n => { layers[ri].setOpacity(0); ri = n; layers[ri].setOpacity(.75); sl.value = ri; $('#rtime').textContent = new Date(frames[ri].time * 1000).toLocaleString('zh-TW', { hour12: false }) + (ri >= d.radar.past.length ? '（預測）' : '') + '　資料來源：RainViewer'; };
+    const play = () => { rt = setInterval(() => show((ri + 1) % frames.length), 700); $('#rplay').textContent = '暫停'; };
+    $('#rplay').onclick = () => rt ? (clearInterval(rt), rt = null, $('#rplay').textContent = '播放') : play();
+    sl.oninput = () => { clearInterval(rt); rt = null; $('#rplay').textContent = '播放'; show(+sl.value); }; show(ri); play();
+  } catch (e) { $('#rtime').textContent = '雷達資料暫時無法載入'; }
+}
+function go(v) {
+  view = v; document.querySelectorAll('.view').forEach(e => e.classList.toggle('on', e.id === 'v-' + v));
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); $('#app').scrollTop = 0;
+  if (v === 'wx') load(); if (v === 'radar') initRadar(); if (v === 'quake') loadQuake(); if (v === 'more') loadMore();
+}
+// ---- 事件 ----
+$('#tabs').onclick = e => { const b = e.target.closest('button'); b && go(b.dataset.v); };
+$('#pick').onclick = openPicker; $('#ref').onclick = () => { locs = []; load('m'); };
+$('#sheet .bk').onclick = closeSheet;
+$('#pn').onclick = e => { const b = e.target.closest('.loc'); if (b) { cur = +b.dataset.id; localStorage.cid = cur; closeSheet(); load(); } };
+$('#app').onclick = e => { const d = e.target.closest('[data-d]'), w = e.target.closest('[data-w]'); if (d) dayDetail(+d.dataset.d); else if (w) warnDetail(+w.dataset.w); };
+$('#app').addEventListener('scroll', e => { const h = $('#hero'); if (h && view === 'wx') { const p = Math.min(e.target.scrollTop / 180, 1); h.style.opacity = 1 - p; h.style.transform = `scale(${1 - p * .08})`; } });
+document.addEventListener('visibilitychange', () => !document.hidden && view === 'wx' && load());
+setInterval(() => view === 'wx' && load(), 300000); load();
+</script></body></html>

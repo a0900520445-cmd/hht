@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> | <%= site.name %></title>
+<link rel="stylesheet" href="/css/style.css?v=<%= ver %>">
+</head>
+<body>
+<div class="topbar"><div class="wrap"><span>臺灣標準時間 <b id="clock"></b></span><span><a href="/admin">管理登入</a></span></div></div>
+<header class="masthead"><div class="wrap">
+  <a class="brand" href="/"><span class="logo">氣</span><span><strong><%= site.name %></strong><small><%= site.en %></small></span></a>
+</div></header>
+<nav class="mainnav"><div class="wrap">
+  <% [['/','首頁','home'],['/forecast','天氣預報','forecast'],['/observations','即時觀測','obs'],['/radar','雷達','radar'],['/warnings','警特報','warnings'],['/earthquakes','地震','quake'],['/typhoons','颱風','typhoon'],['/ocean','海象','ocean'],['/news','最新消息','news']].forEach(n => { %>
+    <a href="<%= n[0] %>" class="<%= active === n[2] ? 'on' : '' %>"><%= n[1] %></a>
+  <% }) %>
+</div></nav>
+<% if (typeof warnings !== 'undefined' && warnings.length) { %>
+<div class="alertbar"><div class="wrap"><b>警特報</b>
+  <% warnings.slice(0,3).forEach(w => { %><a href="/warnings">【<%= w.level %>】<%= w.title %></a><% }) %>
+</div></div>
+<% } %>
+<main class="wrap">

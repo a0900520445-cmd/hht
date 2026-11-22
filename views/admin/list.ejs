@@ -1,0 +1,17 @@
+<%- include('_layout_top') %>
+<div class="bar"><h1><%= mod.label %></h1><a class="btn" href="/admin/<%= cur %>/new">＋ 新增</a></div>
+<% if (flash) { %><div class="ok"><%= flash %></div><% } %>
+<% if (error) { %><div class="err">讀取失敗：<%= error %></div><% } %>
+<table><thead><tr>
+<% mod.list.forEach(c => { const fld = mod.fields.find(x => x.name === c); %><th><%= fld ? fld.label : c %></th><% }) %><th></th></tr></thead><tbody>
+<% if (!rows.length) { %><tr><td colspan="<%= mod.list.length + 1 %>" class="empty">沒有資料</td></tr><% } %>
+<% rows.forEach(r => { %><tr>
+<% mod.list.forEach(c => { const fld = mod.fields.find(x => x.name === c) || {}; let v = r[c];
+  if (fld.ref) v = r.locations?.name || v; else if (fld.type === 'datetime') v = f.dt(v); else if (fld.type === 'checkbox') v = v ? '✓' : '—'; %><td data-label="<%= fld.label || c %>"><%= v ?? '—' %></td><% }) %>
+<td class="act"><a href="/admin/<%= cur %>/<%= r.id %>/edit">編輯</a>
+<form method="post" action="/admin/<%= cur %>/<%= r.id %>/delete" onsubmit="return confirm('確定刪除？')"><button class="del">刪除</button></form></td></tr><% }) %>
+</tbody></table>
+<% const pages = Math.ceil(total / size); if (pages > 1) { %><div class="pager">
+<% for (let i = 1; i <= pages; i++) { %><a class="<%= i === page ? 'on' : '' %>" href="?page=<%= i %>"><%= i %></a><% } %></div><% } %>
+<p class="muted">共 <%= total %> 筆</p>
+</main></body></html>

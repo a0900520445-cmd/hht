@@ -1,0 +1,11 @@
+<table class="data">
+  <thead><tr><th>日期</th><th>天氣</th><th>溫度 °C</th><th>降雨機率</th><th>舒適度</th><th>風</th><th>UVI</th></tr></thead>
+  <tbody>
+  <% if (!forecasts.length) { %><tr><td colspan="7" class="empty">目前沒有預報資料</td></tr><% } %>
+  <% forecasts.forEach(r => { %>
+    <tr><td><%= f.date(r.forecast_date) %></td><td><%= r.wx %></td>
+    <td><span class="hi"><%= f.num(r.temp_high) %></span> / <span class="lo"><%= f.num(r.temp_low) %></span></td>
+    <td><%= f.num(r.pop, '%') %></td><td><%= r.comfort || '—' %></td><td><%= r.wind || '—' %></td><td><%= f.num(r.uvi) %></td></tr>
+  <% }) %>
+  </tbody>
+</table>

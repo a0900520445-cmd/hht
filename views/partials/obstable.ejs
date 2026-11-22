@@ -1,0 +1,11 @@
+<table class="data">
+  <thead><tr><th>測站</th><th>氣溫 °C</th><th>溼度 %</th><th>氣壓 hPa</th><th>風向</th><th>風速 m/s (級)</th><th>時雨量 mm</th><th>能見度 km</th><th>時間</th></tr></thead>
+  <tbody>
+  <% if (!obs.length) { %><tr><td colspan="9" class="empty">目前沒有觀測資料</td></tr><% } %>
+  <% obs.forEach(r => { %>
+    <tr><td><%= r.locations?.name || '—' %></td><td><b><%= f.num(r.temp) %></b></td><td><%= f.num(r.humidity) %></td><td><%= f.num(r.pressure) %></td>
+    <td><%= f.windDir(r.wind_dir) %></td><td><%= f.num(r.wind_speed) %> (<%= f.beaufort(r.wind_speed) %>)</td>
+    <td><%= f.num(r.rain_1h) %></td><td><%= f.num(r.visibility) %></td><td><%= f.dt(r.obs_time) %></td></tr>
+  <% }) %>
+  </tbody>
+</table>
