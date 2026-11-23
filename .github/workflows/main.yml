@@ -15,7 +15,7 @@ jobs:
         with: { distribution: temurin, java-version: 17 }
       - run: npm install
       - run: npx cap add android
-      - run: cp -r android-res/. android/app/src/main/res/
+      - run: cp -r android-res/mipmap-*dpi android/app/src/main/res/
       - run: npx cap sync android
       - run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
