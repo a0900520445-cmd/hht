@@ -1,0 +1,12 @@
+<%- include('_layout_top') %>
+<h1>後台總覽</h1>
+<% if (flash) { %><div class="ok"><%= flash %></div><% } %>
+<form method="post" action="/admin/auto" class="autobox">
+<span>自動產生資料：<b class="<%= auto ? 'on' : 'off' %>"><%= auto ? '開啟中' : '已關閉（純手動）' %></b></span>
+<button class="btn" name="on" value="<%= auto ? '0' : '1' %>"><%= auto ? '關閉自動，全部手動' : '開啟自動' %></button></form>
+<form method="post" action="/admin/generate" style="margin-bottom:16px">
+<button class="btn" name="mode" value="drift">立即更新資料</button> <button class="btn" name="mode" value="reroll" onclick="return confirm('未鎖定的預報會全部重新隨機，確定？')">全部重新隨機</button>
+<p class="muted">預報、觀測、空氣品質、海象會依當季氣候範圍自動產生並持續變動；你手動編輯過的資料會被鎖定，不會被覆蓋。</p></form>
+<div class="cards"><% Object.entries(modules).forEach(([k, m]) => { %>
+<a class="card" href="/admin/<%= k %>"><span><%= counts[k] %></span><%= m.label %></a><% }) %></div>
+</main></body></html>

@@ -1,0 +1,18 @@
+<%- include('_layout_top') %>
+<h1><%= title %></h1>
+<% if (error) { %><div class="err"><%= error %></div><% } %>
+<form method="post" action="<%= action %>" class="form">
+<% mod.fields.forEach(fl => { const v = row[fl.name]; %>
+<label><%= fl.label %><% if (fl.required) { %> <i>*</i><% } %>
+<% if (fl.type === 'textarea') { %><textarea name="<%= fl.name %>" rows="6"><%= v ?? '' %></textarea>
+<% } else if (fl.type === 'checkbox') { %><input type="checkbox" name="<%= fl.name %>" <%= (fl.name === 'manual' || v === true || v === 'on' || (row.id === undefined && !Object.keys(row).length)) ? 'checked' : '' %>>
+<% } else if (fl.ref) { %><select name="<%= fl.name %>" <%= fl.required ? 'required' : '' %>><option value="">—</option>
+  <% refs[fl.name].forEach(o => { %><option value="<%= o.id %>" <%= String(v) === String(o.id) ? 'selected' : '' %>><%= o.name %></option><% }) %></select>
+<% } else if (fl.type === 'select') { %><select name="<%= fl.name %>" <%= fl.required ? 'required' : '' %>><option value="">—</option>
+  <% fl.options.forEach(o => { %><option <%= v === o ? 'selected' : '' %>><%= o %></option><% }) %></select>
+<% } else if (fl.type === 'datetime') { %><input type="datetime-local" name="<%= fl.name %>" value="<%= (v && String(v).includes('T') && v.length === 16) ? v : f.toInput(v) %>" <%= fl.required ? 'required' : '' %>>
+<% } else { %><input type="<%= fl.type %>" name="<%= fl.name %>" value="<%= v ?? '' %>" <%= fl.step ? 'step=' + fl.step : '' %> <%= fl.required ? 'required' : '' %>>
+<% } %></label>
+<% }) %>
+<div class="btns"><button class="btn">儲存</button><a href="/admin/<%= cur %>">取消</a></div>
+</form></main></body></html>

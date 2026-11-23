@@ -1,0 +1,17 @@
+<% const hs = forecasts.map(r => Number(r.temp_high)).filter(n => !isNaN(n)), ls = forecasts.map(r => Number(r.temp_low)).filter(n => !isNaN(n));
+   const mx = Math.max(...hs, 0), mn = Math.min(...ls, mx), span = Math.max(mx - mn, 1); %>
+<div class="week" id="week">
+<% if (!forecasts.length) { %><p class="empty">目前沒有預報資料</p><% } %>
+<% forecasts.slice(0, 7).forEach((r, i) => { const lo = Number(r.temp_low), hi = Number(r.temp_high); %>
+  <button type="button" class="day <%= i === 0 ? 'on' : '' %>" data-i="<%= i %>" style="--d:<%= i %>">
+    <span class="dn"><%= i === 0 ? '今天' : '週' + f.day(r.forecast_date) %></span><span class="dd"><%= f.md(r.forecast_date) %></span>
+    <%- f.icon(r.wx) %>
+    <span class="dw"><%= r.wx %></span>
+    <span class="dt"><b><%= f.num(r.temp_high) %>°</b><i><%= f.num(r.temp_low) %>°</i></span>
+    <span class="rng"><u style="left:<%= isNaN(lo) ? 0 : ((lo - mn) / span * 100).toFixed(0) %>%;width:<%= isNaN(lo) || isNaN(hi) ? 0 : Math.max(((hi - lo) / span * 100), 8).toFixed(0) %>%"></u></span>
+    <span class="pop"><svg viewBox="0 0 10 12"><path d="M5 0C5 0 0 6 0 8a5 5 0 0 0 10 0C10 6 5 0 5 0z" fill="currentColor"/></svg><%= f.num(r.pop, '%') %></span>
+  </button>
+<% }) %>
+</div>
+<div class="detail" id="detail" aria-live="polite"></div>
+<script type="application/json" id="fcdata"><%- JSON.stringify(forecasts.slice(0, 7)).replace(/</g, '\\u003c') %></script>

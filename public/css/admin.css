@@ -1,0 +1,60 @@
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.5 "Noto Sans TC","Microsoft JhengHei",sans-serif;background:#f3f5f8;color:#222;display:flex;min-height:100vh}
+a{color:#0b4f8a;text-decoration:none}
+.side{width:210px;background:#1f2a37;flex:none;padding-bottom:20px}
+.side .sb{color:#fff;font-weight:700;padding:16px;border-bottom:1px solid #33414f}.sb small{display:block;font-weight:400;color:#93a1b3;font-size:12px}
+.side a{display:block;color:#cfd7e2;padding:9px 16px}.side a:hover,.side a.on{background:#0b4f8a;color:#fff}
+.side form{padding:12px 16px}.side button{width:100%;padding:7px;border:1px solid #4a596b;background:none;color:#cfd7e2;cursor:pointer}
+.cont{flex:1;padding:22px 28px;overflow-x:auto;min-width:0}
+h1{font-size:21px;margin:0 0 14px}.bar{display:flex;justify-content:space-between;align-items:center}
+.btn,button.btn{background:#0b4f8a;color:#fff;border:0;padding:7px 16px;cursor:pointer;font:inherit;border-radius:3px}
+table{width:100%;background:#fff;border-collapse:collapse}
+th,td{padding:8px 10px;border:1px solid #dde2e9;text-align:left}th{background:#eaf0f7}
+.empty{text-align:center;color:#889}
+.act{white-space:nowrap}.act form{display:inline}.act a{margin-right:10px}
+.del{background:none;border:0;color:#c62828;cursor:pointer;font:inherit}
+.ok{background:#e6f4ea;border:1px solid #b7dfc2;padding:8px 12px;margin-bottom:10px}
+.err{background:#fdecea;border:1px solid #f1b5af;padding:8px 12px;margin-bottom:10px;color:#a1241a}
+.pager a{display:inline-block;padding:3px 10px;border:1px solid #cdd4dd;background:#fff;margin:10px 4px 0 0}.pager a.on{background:#0b4f8a;color:#fff}
+.muted{color:#889}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.card{background:#fff;border:1px solid #dde2e9;padding:16px;color:#222}.card span{display:block;font-size:30px;font-weight:700;color:#0b4f8a}
+.form{background:#fff;border:1px solid #dde2e9;padding:20px;max-width:640px}
+.form label{display:block;margin-bottom:14px;font-weight:600}.form i{color:#c62828}
+.form input:not([type=checkbox]),.form select,.form textarea{display:block;width:100%;margin-top:4px;padding:7px 9px;border:1px solid #c5ccd6;font:inherit;font-weight:400}
+.btns{display:flex;gap:16px;align-items:center}
+body.login{display:grid;place-items:center;background:#e9eef4}
+.box{background:#fff;padding:30px;width:340px;border:1px solid #d5dbe3}.box h1{margin:0}.box p{color:#778;margin:2px 0 18px}
+.box label{display:block;margin-bottom:12px;font-weight:600}.box input{display:block;width:100%;padding:8px;margin-top:4px;border:1px solid #c5ccd6;font:inherit}
+.box button{width:100%;padding:9px;background:#0b4f8a;color:#fff;border:0;cursor:pointer;font:inherit;margin-bottom:12px}
+.autobox{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;border:1px solid #dde2e9;padding:12px 16px;margin-bottom:12px;border-radius:8px}
+.autobox b.on{color:#1a8f4a}.autobox b.off{color:#c62828}
+/* ---- 手機版後台 ---- */
+@media (max-width:760px){
+ body{display:block}
+ .side{width:auto;position:sticky;top:0;z-index:20;display:flex;overflow-x:auto;gap:6px;padding:8px 10px;align-items:center;white-space:nowrap;scrollbar-width:none}
+ .side .sb{display:none}
+ .side a{border-radius:99px;padding:7px 14px;background:#2c3b4c;flex:none}
+ .side form{padding:0 0 0 4px;flex:none}.side button{width:auto;padding:7px 14px;border-radius:99px}
+ .cont{padding:14px 12px 40px}
+ h1{font-size:19px}
+ table,thead,tbody,tr,td{display:block;width:100%}
+ thead{display:none}
+ tr{background:#fff;border:1px solid #dde2e9;border-radius:12px;margin-bottom:10px;padding:6px 12px}
+ td{border:0;border-bottom:1px solid #eef1f5;display:flex;justify-content:space-between;gap:12px;padding:8px 0;text-align:right}
+ td::before{content:attr(data-label);color:#778;text-align:left;flex:none}
+ td:last-child{border:0}
+ td.empty{display:block}td.empty::before{display:none}
+ .act{justify-content:flex-end;gap:18px}.act::before{display:none}
+ .act a,.del{padding:8px 4px;font-size:15px}
+ .btn,button.btn{padding:10px 18px}
+ .form{padding:14px;max-width:none;border-radius:12px}
+ .form input:not([type=checkbox]),.form select,.form textarea{font-size:16px;padding:11px 12px}
+ .form input[type=checkbox]{width:22px;height:22px;margin-top:6px}
+ .btns .btn{flex:1;text-align:center}
+ .cards{grid-template-columns:1fr 1fr}
+ .box{width:92vw}
+}
+
+.mode{border:0;border-radius:99px;padding:5px 14px;font:inherit;font-size:13px;cursor:pointer}.mode.a{background:#e3f4ea;color:#1a8f4a}.mode.m{background:#fdecd2;color:#b36b00}
+td form{display:inline}
