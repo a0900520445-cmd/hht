@@ -1,8 +1,0 @@
-<%- include('partials/header') %>
-<h1 class="pt">海象資訊</h1>
-<section class="panel"><table class="data">
-<thead><tr><th>海域 / 測站</th><th>時間</th><th>浪高 m</th><th>週期 s</th><th>海溫 °C</th><th>潮汐</th><th>海面狀況</th></tr></thead><tbody>
-<% if (!list.length) { %><tr><td colspan="7" class="empty">無資料</td></tr><% } %>
-<% list.forEach(o => { %><tr><td><%= o.station %></td><td><%= f.dt(o.obs_time) %></td><td><%= f.num(o.wave_height) %></td><td><%= f.num(o.wave_period) %></td><td><%= f.num(o.sea_temp) %></td><td><%= o.tide || '—' %></td><td><%= o.forecast || '' %></td></tr><% }) %>
-</tbody></table></section>
-<%- include('partials/footer') %>

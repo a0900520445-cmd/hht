@@ -1,8 +1,0 @@
-<%- include('partials/header') %>
-<h1 class="pt">地震資訊</h1>
-<section class="panel"><table class="data">
-<thead><tr><th>發震時間</th><th>規模</th><th>深度 km</th><th>震央</th><th>最大震度</th><th>備註</th></tr></thead><tbody>
-<% if (!list.length) { %><tr><td colspan="6" class="empty">無資料</td></tr><% } %>
-<% list.forEach(q => { %><tr><td><%= f.dt(q.occurred_at) %></td><td><b class="mag"><%= q.magnitude %></b></td><td><%= f.num(q.depth) %></td><td><%= q.epicenter %></td><td><%= q.max_intensity || '—' %></td><td><%= q.note || '' %></td></tr><% }) %>
-</tbody></table></section>
-<%- include('partials/footer') %>
